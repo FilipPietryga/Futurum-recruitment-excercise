@@ -14,9 +14,8 @@ public class Campaign {
     @Column(nullable = false)
     private String name;
 
-    @ElementCollection
     @Column(nullable = false)
-    private List<String> keywords;
+    private String keywords;
 
     @Column(nullable = false)
     private int bidAmount;
@@ -30,7 +29,7 @@ public class Campaign {
     private String town;
     private int radius;
 
-    public Campaign(int radius, String town, boolean status, int campaignFund, int bidAmount, List<String> keywords, String name, Long id) {
+    public Campaign(int radius, String town, boolean status, int campaignFund, int bidAmount, String keywords, String name, Long id) {
         this.radius = radius;
         this.town = town;
         this.status = status;
@@ -42,7 +41,7 @@ public class Campaign {
     }
 
     public Campaign() {
-        keywords = List.of();
+        keywords = "";
         name = "";
     }
 
@@ -62,11 +61,11 @@ public class Campaign {
         this.name = name;
     }
 
-    public List<String> getKeywords() {
+    public String getKeywords() {
         return keywords;
     }
 
-    public void setKeywords(List<String> keywords) {
+    public void setKeywords(String keywords) {
         this.keywords = keywords;
     }
 

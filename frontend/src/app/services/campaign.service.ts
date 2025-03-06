@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Campaign } from '../model/campaign.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class CampaignService {
 
   constructor(private http: HttpClient) {}
 
-  getCampaign(): Observable<string[]> {
-    return this.http.get<string[]>(this.apiUrl);
+  getCampaign(): Observable<Campaign[]> {
+    return this.http.get<Campaign[]>(this.apiUrl);
   }
 }

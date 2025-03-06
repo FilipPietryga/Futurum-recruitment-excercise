@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CampaignService } from './services/campaign.service';
 import { CommonModule } from '@angular/common';
+import { Campaign } from './model/campaign.model';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
   title: string = "frontend";
-  campaigns: string[] = [];
+  campaigns: Campaign[] = [];
 
   constructor(private campaignService: CampaignService) {}
 

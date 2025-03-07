@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Tag(name = "Campaign Management", description = "Operations related to campaigns")
@@ -28,9 +29,14 @@ public class CampaignController {
 
     @Tag(name = "Campaign Management")
     @Operation(summary = "Get all campaigns", description = "Retrieve a list of all campaigns.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Campaigns found"),
+            @ApiResponse(responseCode = "404", description = "Campaigns not found")
+    })
     @GetMapping
     public ResponseEntity<List<Campaign>> getAllCampaigns() {
-        return ResponseEntity.ok(campaignService.fetchAllCampaigns());
+        List<Campaign> listOfCampaigns = campaignService.fetchAllCampaigns();
+        return Objects.nonNull(listOfCampaigns) ? ResponseEntity.ok(listOfCampaigns) : ResponseEntity.notFound().build();
     }
 
     @Tag(name = "Campaign Management")
@@ -42,8 +48,7 @@ public class CampaignController {
     @GetMapping("/{campaignId}")
     public ResponseEntity<Campaign> getCampaignById(@PathVariable Long campaignId) {
         Optional<Campaign> campaign = campaignService.fetchCampaignById(campaignId);
-        return campaign.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return Objects.nonNull(campaign) && campaign.isPresent() ? ResponseEntity.ok(campaign.get()) : ResponseEntity.notFound().build();
     }
 
     @Tag(name = "Campaign Management")
@@ -63,7 +68,7 @@ public class CampaignController {
     @PutMapping("/{campaignId}")
     public ResponseEntity<Campaign> updateCampaign(@PathVariable Long campaignId, @RequestBody Campaign updatedCampaign) {
         Campaign savedCampaign = campaignService.updateCampaign(campaignId, updatedCampaign);
-        return ResponseEntity.ok(savedCampaign);
+        return Objects.nonNull(savedCampaign) ? ResponseEntity.ok(savedCampaign) : ResponseEntity.notFound().build();
     }
 
     @Tag(name = "Campaign Management")
@@ -74,9 +79,7 @@ public class CampaignController {
     })
     @DeleteMapping("/{campaignId}")
     public ResponseEntity<Void> deleteCampaign(@PathVariable Long campaignId) {
-        if (!campaignService.deleteCampaignById(campaignId)) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.noContent().build();
+        boolean successfullyDeleted = campaignService.deleteCampaignById(campaignId);
+        return successfullyDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

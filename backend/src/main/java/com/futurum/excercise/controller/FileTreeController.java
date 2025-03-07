@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Tag(name = "File tree", description = "Display the file tree")
 @RestController
+@RequestMapping("/api/file-tree")
 public class FileTreeController {
 
     @Tag(name = "File tree")
@@ -23,7 +25,7 @@ public class FileTreeController {
             @ApiResponse(responseCode = "200", description = "Campaigns found"),
             @ApiResponse(responseCode = "404", description = "Campaigns not found")
     })
-    @GetMapping("/file-tree")
+    @GetMapping
     public List<String> listFiles() throws IOException {
         List<String> fileList = new ArrayList<>();
         File dir = new ClassPathResource("static").getFile();

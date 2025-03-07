@@ -1,4 +1,4 @@
-name: Build and deploy JAR and Angular app to Azure Web App - FuturumExcercise
+name: Build and Deploy Angular and Spring Boot to Azure Web App
 
 on:
   push:
@@ -13,54 +13,40 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # --- Backend build ---
-      - name: Set up Java version
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'microsoft'
 
-      - name: Build backend with Maven
-        working-directory: ./backend
-        run: mvn clean package
-
-      - name: Verify backend build output
-        run: ls -al ./backend/target/
-
-      - name: Upload backend JAR artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-artifact
-          path: ./backend/target/*.jar
-
-      # --- Frontend build ---
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli
-
-      - name: Install frontend dependencies
+      - name: Install Angular dependencies
         working-directory: ./frontend
         run: npm install
 
       - name: Build Angular app
         working-directory: ./frontend
-        run: ng build --configuration production --output-path=dist
+        run: npm run build -- --output-path=../backend/src/main/resources/static
 
-      - name: Verify frontend build output
-        run: ls -al ./frontend/dist/
+      - name: Build Spring Boot app
+        working-directory: ./backend
+        run: mvn clean install
 
-      - name: Upload frontend artifact
+      - name: List built JAR files
+        run: ls -al ./backend/target/
+
+      - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-artifact
-          path: ./frontend/dist/
+          name: spring-boot-app
+          path: ./backend/target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
@@ -73,35 +59,23 @@ jobs:
       contents: read
 
     steps:
-      - name: Download backend artifact
+      - name: Download built JAR
         uses: actions/download-artifact@v4
         with:
-          name: backend-artifact
-          path: ./downloaded-backend
-
-      - name: Download frontend artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-artifact
-          path: ./downloaded-frontend
-
-      - name: Verify backend artifact
-        run: ls -al ./downloaded-backend
-
-      - name: Verify frontend artifact
-        run: ls -al ./downloaded-frontend
+          name: spring-boot-app
+          path: ./downloaded-artifacts
 
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F45EA71F5792485A9B30D7812C1E6093 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_965788C1C612421FB205960EE477F359 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B3364AD16A4D40648CC292B4BBBBAD23 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
-      - name: Deploy frontend to Azure Web App
-        id: deploy-frontend
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'FuturumExcercise'
           slot-name: 'Production'
-          package: ./downloaded-frontend
+          package: './downloaded-artifacts/*.jar'

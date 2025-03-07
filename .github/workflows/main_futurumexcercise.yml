@@ -16,6 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # --- Backend build ---
       - name: Set up Java version
         uses: actions/setup-java@v4
         with:
@@ -24,17 +25,18 @@ jobs:
 
       - name: Build backend with Maven
         working-directory: ./backend
-        run: mvn clean install
+        run: mvn clean package
 
-      - name: List backend target directory
+      - name: Verify backend build output
         run: ls -al ./backend/target/
 
       - name: Upload backend JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend-artifact
-          path: './backend/target/*.jar'
+          path: ./backend/target/*.jar
 
+      # --- Frontend build ---
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -43,7 +45,7 @@ jobs:
       - name: Install Angular CLI
         run: npm install -g @angular/cli
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         working-directory: ./frontend
         run: npm install
 
@@ -51,14 +53,14 @@ jobs:
         working-directory: ./frontend
         run: ng build --configuration production --output-path=dist
 
-      - name: List frontend dist directory
+      - name: Verify frontend build output
         run: ls -al ./frontend/dist/
 
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend-artifact
-          path: './frontend/dist/'
+          path: ./frontend/dist/
 
   deploy:
     runs-on: ubuntu-latest
@@ -83,10 +85,10 @@ jobs:
           name: frontend-artifact
           path: ./downloaded-frontend
 
-      - name: List downloaded backend files
+      - name: Verify backend artifact
         run: ls -al ./downloaded-backend
 
-      - name: List downloaded frontend files
+      - name: Verify frontend artifact
         run: ls -al ./downloaded-frontend
 
       - name: Login to Azure
@@ -102,7 +104,7 @@ jobs:
         with:
           app-name: 'FuturumExcercise'
           slot-name: 'Production'
-          package: './downloaded-backend/*.jar'
+          package: ./downloaded-backend
 
       - name: Deploy frontend to Azure Web App
         id: deploy-frontend
@@ -110,4 +112,4 @@ jobs:
         with:
           app-name: 'FuturumExcercise'
           slot-name: 'Production'
-          package: './downloaded-frontend'
+          package: ./downloaded-frontend

@@ -1,0 +1,74 @@
+name: Build, Test, and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Angular dependencies
+        run: npm install
+        working-directory: ./frontend
+
+      - name: Run Angular tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: ./frontend
+
+      - name: Build Angular app
+        run: npm run build
+        working-directory: ./frontend
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Spring Boot app
+        run: ./mvnw clean package -DskipTests
+        working-directory: ./backend
+
+      - name: Run Spring Boot tests
+        run: ./mvnw test
+        working-directory: ./backend
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: |
+            ./frontend/dist/**
+            ./backend/target/*.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: app
+          path: ./app
+
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
+          package: ./app

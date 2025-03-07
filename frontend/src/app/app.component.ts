@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CampaignListComponent } from './component/campaign-list/campaign-list.component';
 import { ReactiveFormsModule } from '@angular/forms'
 import { CampaignManagementComponent } from "./component/campaign-management/campaign-management.component";
 

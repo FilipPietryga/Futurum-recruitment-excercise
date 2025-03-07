@@ -41,6 +41,9 @@ jobs:
           sed -i 's|src="polyfills-FFHMD2TL.js"|src="/static/browser/polyfills-FFHMD2TL.js"|' dist/frontend/browser/index.html
           sed -i 's|src="main-IEACTBPA.js"|src="/static/browser/main-IEACTBPA.js"|' dist/frontend/browser/index.html
 
+      - name: Install Maven
+        run: sudo apt-get install maven
+
       - name: Build Spring Boot backend
         run: ./mvnw clean package -DskipTests
 

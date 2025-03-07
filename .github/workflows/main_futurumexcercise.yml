@@ -38,8 +38,8 @@ jobs:
       - name: Update paths in index.html
         working-directory: ./frontend
         run: |
-          sed -i 's|src="polyfills-FFHMD2TL.js"|src="/static/browser/polyfills-FFHMD2TL.js"|' dist/index.html
-          sed -i 's|src="main-IEACTBPA.js"|src="/static/browser/main-IEACTBPA.js"|' dist/index.html
+          sed -i 's|src="polyfills-FFHMD2TL.js"|src="/static/browser/polyfills-FFHMD2TL.js"|' dist/frontend/browser/index.html
+          sed -i 's|src="main-IEACTBPA.js"|src="/static/browser/main-IEACTBPA.js"|' dist/frontend/browser/index.html
 
       - name: Build Spring Boot backend
         run: ./mvnw clean package -DskipTests

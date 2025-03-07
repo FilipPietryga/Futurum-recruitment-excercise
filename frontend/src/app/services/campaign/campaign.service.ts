@@ -7,7 +7,7 @@ import { Campaign } from '../../models/campaign/campaign.model';
   providedIn: 'root'
 })
 export class CampaignService {
-  private campaignApiUrl = '/api/campaign';
+  private campaignApiUrl = 'http://localhost:8080/api/campaign';
 
   constructor(private http: HttpClient) {}
 

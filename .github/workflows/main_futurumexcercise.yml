@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy JAR app to Azure Web App - FuturumExcercise
+name: Build and deploy JAR and Angular app to Azure Web App - FuturumExcercise
 
 on:
   push:
@@ -13,10 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Java version
         uses: actions/setup-java@v4
@@ -24,18 +22,43 @@ jobs:
           java-version: '17'
           distribution: 'microsoft'
 
-      - name: Build with Maven
+      - name: Build backend with Maven
         working-directory: ./backend
         run: mvn clean install
 
-      - name: List files in target directory
+      - name: List backend target directory
         run: ls -al ./backend/target/
 
-      - name: Upload artifact for deployment job
+      - name: Upload backend JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: excercise
-          path: '${{ github.workspace }}/backend/target/*.jar'
+          name: backend-artifact
+          path: './backend/target/*.jar'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build Angular app
+        working-directory: ./frontend
+        run: ng build --configuration production --output-path=dist
+
+      - name: List frontend dist directory
+        run: ls -al ./frontend/dist/
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-artifact
+          path: './frontend/dist/'
 
   deploy:
     runs-on: ubuntu-latest
@@ -44,23 +67,27 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-  
+      id-token: write
+      contents: read
+
     steps:
-      - name: Download artifact from build job
+      - name: Download backend artifact
         uses: actions/download-artifact@v4
         with:
-          name: excercise
-          path: ./downloaded-artifacts
+          name: backend-artifact
+          path: ./downloaded-backend
 
-      - name: Display environment variables for debugging
-        run: printenv
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-artifact
+          path: ./downloaded-frontend
 
-      - name: List files in downloaded artifacts directory
-        run: |
-          echo "Listing files in downloaded artifacts directory:"
-          ls -al ./downloaded-artifacts
+      - name: List downloaded backend files
+        run: ls -al ./downloaded-backend
+
+      - name: List downloaded frontend files
+        run: ls -al ./downloaded-frontend
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -69,11 +96,18 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_965788C1C612421FB205960EE477F359 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B3364AD16A4D40648CC292B4BBBBAD23 }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Deploy backend to Azure Web App
+        id: deploy-backend
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'FuturumExcercise'
           slot-name: 'Production'
-          package: '*.jar'
-          
+          package: './downloaded-backend/*.jar'
+
+      - name: Deploy frontend to Azure Web App
+        id: deploy-frontend
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'FuturumExcercise'
+          slot-name: 'Production'
+          package: './downloaded-frontend'

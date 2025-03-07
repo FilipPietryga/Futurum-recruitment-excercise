@@ -32,9 +32,11 @@ jobs:
         run: npm install
 
       - name: Build Angular project
+        working-directory: ./frontend
         run: npm run build
 
       - name: Update paths in index.html
+        working-directory: ./frontend
         run: |
           sed -i 's|src="polyfills-FFHMD2TL.js"|src="/static/browser/polyfills-FFHMD2TL.js"|' dist/index.html
           sed -i 's|src="main-IEACTBPA.js"|src="/static/browser/main-IEACTBPA.js"|' dist/index.html

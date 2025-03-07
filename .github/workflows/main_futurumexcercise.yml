@@ -31,32 +31,17 @@ jobs:
         working-directory: ./frontend
         run: npm install
 
-      - name: Build Angular project
+      - name: Build Angular app
         working-directory: ./frontend
-        run: npm run build
-
-      - name: Update paths in index.html
-        working-directory: ./frontend
-        run: |
-          sed -i 's|src="polyfills-FFHMD2TL.js"|src="/static/browser/polyfills-FFHMD2TL.js"|' dist/frontend/browser/index.html
-          sed -i 's|src="main-IEACTBPA.js"|src="/static/browser/main-IEACTBPA.js"|' dist/frontend/browser/index.html
-
-      - name: Install Maven
-        run: sudo apt-get install maven
-
-      - name: Build Spring Boot backend
-        run: ./mvnw clean package -DskipTests
-
-      - name: Copy frontend build to Spring Boot resources
-        run: |
-          cp -r dist/* ./backend/src/main/resources/static/
-
-      - name: Package Spring Boot app into JAR
-        run: ./mvnw package
+        run: npm run build -- --output-path=../backend/src/main/resources/static --base-href=/
         
       - name: Verify Angular build output
         run: ls -al ./backend/src/main/resources/static
       
+      - name: Build Spring Boot app
+        working-directory: ./backend
+        run: mvn clean install
+
       - name: List built JAR files
         run: ls -al ./backend/target/
 

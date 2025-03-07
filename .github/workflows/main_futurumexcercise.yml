@@ -87,4 +87,4 @@ jobs:
         with:
           app-name: 'FuturumExcercise'
           slot-name: 'Production'
-          package: './downloaded-artifacts/*.jar'
+          package: './downloaded-artifacts/excercise-INDEV.jar'

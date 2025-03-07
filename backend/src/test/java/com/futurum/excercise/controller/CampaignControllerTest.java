@@ -1,10 +1,8 @@
 package com.futurum.excercise.controller;
 
-import com.futurum.excercise.repository.CampaignRepository;
+import com.futurum.excercise.services.CampaignService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,7 +20,7 @@ public class CampaignControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private CampaignRepository campaignRepository;
+    private CampaignService campaignService;
 
     @BeforeEach
     void setUp() {

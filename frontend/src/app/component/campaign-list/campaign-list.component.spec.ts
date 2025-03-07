@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CampaignListComponent } from './campaignList.component';
+import { CampaignListComponent } from './campaign-list.component';
 import { provideHttpClient } from '@angular/common/http';
 
 describe('CampaignListComponent', () => {

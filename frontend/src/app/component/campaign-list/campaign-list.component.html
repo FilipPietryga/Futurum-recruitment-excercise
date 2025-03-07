@@ -1,0 +1,31 @@
+<h3 class="mt-3">Campaign List</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Bid Amount</th>
+          <th>Campaign Fund</th>
+          <th>Status</th>
+          <th>Town</th>
+          <th>Radius</th>
+          <th>Keywords</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let campaign of campaigns">
+          <td>{{ campaign.name }}</td>
+          <td>{{ campaign.bidAmount }}</td>
+          <td>{{ campaign.campaignFund }}</td>
+          <td>{{ campaign.status ? 'Active' : 'Inactive' }}</td>
+          <td>{{ campaign.town }}</td>
+          <td>{{ campaign.radius }}</td>
+          <td>{{ campaign.keywords }}</td>
+          <td>
+            <button (click)="onEdit(campaign)" class="btn btn-warning">Edit</button>
+            <button (click)="onDelete(campaign.id)" class="btn btn-danger">Delete</button>
+            <button (click)="onUntrigger()" class="btn btn-danger">Untrigger</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>

@@ -1,18 +1,17 @@
 package com.futurum.excercise.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipFile;
 
 @Tag(name = "File tree", description = "Display the file tree")
 @RestController
@@ -24,18 +23,14 @@ public class FileTreeController {
     @GetMapping
     public List<String> listFiles() throws IOException {
         List<String> fileList = new ArrayList<>();
-        File dir = new ClassPathResource("static").getFile();
-        listFilesRecursively(dir, fileList);
-        return fileList;
-    }
+        Resource resource = new ClassPathResource("BOOT-INF/classes/static");
 
-    private void listFilesRecursively(File dir, List<String> fileList) {
-        if (dir.isDirectory()) {
-            for (File file : dir.listFiles()) {
-                listFilesRecursively(file, fileList);
-            }
-        } else {
-            fileList.add(dir.getPath());
+        try (ZipFile jarFile = new ZipFile(resource.getFile())) {
+            jarFile.stream()
+                    .filter(entry -> entry.getName().startsWith("BOOT-INF/classes/static"))
+                    .forEach(entry -> fileList.add(entry.getName()));
         }
+
+        return fileList;
     }
 }

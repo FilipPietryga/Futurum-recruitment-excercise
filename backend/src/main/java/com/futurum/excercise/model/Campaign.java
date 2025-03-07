@@ -2,8 +2,6 @@ package com.futurum.excercise.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 public class Campaign {
 
@@ -29,20 +27,18 @@ public class Campaign {
     private String town;
     private int radius;
 
-    public Campaign(int radius, String town, boolean status, int campaignFund, int bidAmount, String keywords, String name, Long id) {
-        this.radius = radius;
-        this.town = town;
-        this.status = status;
-        this.campaignFund = campaignFund;
-        this.bidAmount = bidAmount;
-        this.keywords = keywords;
-        this.name = name;
+    public Campaign(Long id, String name, String keywords, int bidAmount, int campaignFund, boolean status, String town, int radius) {
         this.id = id;
+        this.name = name;
+        this.keywords = keywords;
+        this.bidAmount = bidAmount;
+        this.campaignFund = campaignFund;
+        this.status = status;
+        this.town = town;
+        this.radius = radius;
     }
 
     public Campaign() {
-        keywords = "";
-        name = "";
     }
 
     public Long getId() {

@@ -33,14 +33,20 @@ jobs:
 
       - name: Build Angular app
         working-directory: ./frontend
-        run: npm run build -- --output-path=../backend/src/main/resources/static
-
+        run: npm run build -- --output-path=../backend/src/main/resources/static --base-href=/
+        
+      - name: Verify Angular build output
+        run: ls -al ./backend/src/main/resources/static
+      
       - name: Build Spring Boot app
         working-directory: ./backend
         run: mvn clean install
 
       - name: List built JAR files
         run: ls -al ./backend/target/
+
+      - name: List contents of the JAR
+        run: jar tf ./backend/target/*.jar | grep static
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4

@@ -98,14 +98,6 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_965788C1C612421FB205960EE477F359 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B3364AD16A4D40648CC292B4BBBBAD23 }}
 
-      - name: Deploy backend to Azure Web App
-        id: deploy-backend
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'FuturumExcercise'
-          slot-name: 'Production'
-          package: ./downloaded-backend
-
       - name: Deploy frontend to Azure Web App
         id: deploy-frontend
         uses: azure/webapps-deploy@v3

@@ -21,10 +21,6 @@ public class FileTreeController {
 
     @Tag(name = "File tree")
     @Operation(summary = "Get all files in the static folder", description = "Retrieve a list of all static files in the jar.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Campaigns found"),
-            @ApiResponse(responseCode = "404", description = "Campaigns not found")
-    })
     @GetMapping
     public List<String> listFiles() throws IOException {
         List<String> fileList = new ArrayList<>();

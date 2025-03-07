@@ -50,6 +50,12 @@ jobs:
         with:
           name: excercise
 
+      - name: Display environment variables for debugging
+        run: printenv
+
+      - name: List files in downloaded artifacts directory
+        run: ls -al ./downloaded-artifacts
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
